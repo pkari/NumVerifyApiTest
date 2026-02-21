@@ -1,0 +1,66 @@
+{
+  "type": "object",
+  "properties": {
+    "valid": {
+      "type": "boolean",
+      "description": "Indicates whether the provided phone number is valid."
+    },
+    "number": {
+      "type": "string",
+      "description": "Original phone number submitted for validation.",
+      "pattern": "^[0-9]{7,15}$"
+    },
+    "local_format": {
+      "type": "string",
+      "description": "Local/national representation of the phone number.",
+      "pattern": "^[0-9]{7,15}$"
+    },
+    "international_format": {
+      "type": "string",
+      "description": "International (E.164) formatted phone number.",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "country_prefix": {
+      "type": "string",
+      "description": "Country calling code/prefix associated with the number.",
+      "pattern": "^\\+[0-9]{1,4}$"
+    },
+    "country_code": {
+      "type": "string",
+      "description": "Two-letter ISO country code.",
+      "pattern": "^[A-Z]{2}$"
+    },
+    "country_name": {
+      "type": "string",
+      "description": "Full country name.",
+      "minLength": 2
+    },
+    "location": {
+      "type": "string",
+      "description": "Location or city information (if available)."
+    },
+    "carrier": {
+      "type": "string",
+      "description": "Carrier name of the phone number (if available).",
+      "minLength": 1
+    },
+    "line_type": {
+      "type": "string",
+      "description": "Type of phone line (e.g., mobile, landline, VoIP).",
+      "enum": ["mobile", "landline", "voip", "premium_rate", "toll_free", "shared_cost", "personal_number", "pager", "uan", "voicemail", "unknown"]
+    }
+  },
+  "required": [
+    "valid",
+    "number",
+    "local_format",
+    "international_format",
+    "country_prefix",
+    "country_code",
+    "country_name",
+    "location",
+    "carrier",
+    "line_type"
+  ],
+  "additionalProperties": false
+}
