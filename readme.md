@@ -1,4 +1,4 @@
-# My Awesome Project
+# NumVerify API Test
 
 This is an api test project, created by Karoly Puskas
 
