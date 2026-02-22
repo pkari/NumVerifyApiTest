@@ -6,7 +6,7 @@ import time
 class BackoffSession(requests.Session):
     def request(self, method, url, *args, max_retries=5, initial_delay=1, **kwargs):
         delay = initial_delay
-        for attempt in range(max_retries):
+        for _ in range(max_retries):
             response = super().request(method, url, *args, **kwargs)
             if response.status_code != 429:
                 return response

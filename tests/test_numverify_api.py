@@ -1,3 +1,4 @@
+import logging
 import os
 import pytest
 
@@ -8,8 +9,11 @@ from helpers.schema_validator import JSONHelper
 from api.numverify_api import NumVerifyAPI
 from assertpy import assert_that, soft_assertions
 
+logger = logging.getLogger(__name__)
+
 
 class TestNumVerifyAPI:
+
     @classmethod
     def setup_class(cls):
 
@@ -17,17 +21,20 @@ class TestNumVerifyAPI:
         if not api_key:
             raise ValueError("NUMVERIFY_API_KEY environment variable not set")
         cls.api = NumVerifyAPI(api_key)
+        logger.info("NumVerifyAPI initialized with provided API key.")
 
     @pytest.mark.parametrize("number, country_code, j_format", [
             pytest.param(14158586273, "", "", id="Valid default values"),
             pytest.param(201234567, 'HU', 1, id="Valid HU number")
         ])
     def test_number_verified(self, number, country_code, j_format):
+        logger.info(f"Testing number verification: number={number}, country_code={country_code}, j_format={j_format}")
         response = self.api.get_number_validation(number, country_code, j_format)
+        logger.info(f"Received response: status_code={response.status_code}, body={response.text}")
         assert response.status_code == HTTPResponse.OK
         data = response.json()
         with soft_assertions():
-            assert_that(JSONHelper.schema_validator(data), "Response JSON does not match schema").is_true()
+            assert_that(JSONHelper.schema_validator(data, "GET_numverify.json"), "Response JSON does not match schema").is_true()
             assert_that(data['valid'], f"Response validity is not correct. Expected: {True}, "
                                        f"but got: {data['valid']}").is_true()
             assert_that(data['number'], f"Response number is not correct. Expected: {number}, "
@@ -46,8 +53,10 @@ class TestNumVerifyAPI:
                      id="Empty string phone number"),
     ])
     def test_error_responses(self, api_key, number, expected_status, expected_error):
+        logger.info(f"Testing error response: api_key={api_key}, number={number}")
         api = self.api if api_key is None else NumVerifyAPI(api_key)
         response = api.get_number_validation(number)
+        logger.info(f"Received response: status_code={response.status_code}, body={response.text}")
         assert response.status_code == expected_status
         data = response.json()
         assert_error_response(data, expected_error)
@@ -60,7 +69,9 @@ class TestNumVerifyAPI:
         pytest.param(14158586273, "US", -1, HTTPResponse.OK, True, id="Invalid format"),
     ])
     def test_number_validation_edge_cases(self, number, country_code, j_format, expected_status, expected_valid):
+        logger.info(f"Testing edge case: number={number}, country_code={country_code}, j_format={j_format}")
         response = self.api.get_number_validation(number, country_code, j_format)
+        logger.info(f"Received response: status_code={response.status_code}, body={response.text}")
         assert response.status_code == expected_status
         data = response.json()
         assert_that(data['valid']).is_equal_to(expected_valid)
